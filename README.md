@@ -13,7 +13,7 @@ per-session seat availability.
 | `generate-landing.js` | Bakes a session's event info and grada (sector) list into `landing.html`. |
 | `landing.html` | RC Celta "¡Avísame!" sign-up page for one match (Mailchimp-backed). |
 | `server.js` | Local server for `landing.html` + `POST /subscribe` (stores leads in Mailchimp). |
-| `onebox-sessions-cards.html` | Visual grid of all matches, colour-coded by availability, with search. Links the featured match to the landing page. |
+| `index.html` | Visual grid of all matches, colour-coded by availability, with search. Links the featured match to the landing page. This is the published site homepage. |
 | `onebox-api-test.html` | Dark-theme API documentation for the three endpoints (secrets redacted). |
 | `setup-mailchimp.js` | One-off setup for the Mailchimp audience merge fields. |
 
@@ -38,5 +38,5 @@ python3 list_matches.py       # list matches
 ./start.command               # launch the landing page locally (port 3000)
 ```
 
-The static pages (`onebox-sessions-cards.html`, `onebox-api-test.html`) open
-directly in a browser.
+The static pages (`index.html`, `onebox-api-test.html`) open directly in a
+browser, and are published via GitHub Pages.
