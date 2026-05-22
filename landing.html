@@ -572,16 +572,16 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviando…';
 
-            // mode:'no-cors' lets the browser POST cross-site to Mailchimp.
-            // The response is opaque (unreadable), so a non-throwing request
-            // is treated as success — same approach as the classmate's page.
-            fetch('https://' + MC.host + '/subscribe/post?u=' + MC.u + '&id=' + MC.id + '&f_id=' + MC.f_id, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body.toString(),
-            })
-                .then(function () {
+            // Confirm quickly. Mailchimp's hosted endpoint can take several
+            // seconds to respond, and the no-cors response is opaque (we can't
+            // read it anyway) — so we show the confirmation after ~1s while the
+            // request completes in the background (keepalive). A fast network
+            // failure still surfaces an error.
+            var settled = false;
+            function finish(ok) {
+                if (settled) return;
+                settled = true;
+                if (ok) {
                     showStatus('¡Listo! Te avisaremos en cuanto se abran las entradas.', 'success');
                     if (typeof gtag === 'function') {
                         gtag('event', 'avisame_signup', {
@@ -591,14 +591,25 @@
                         });
                     }
                     form.reset();
-                })
-                .catch(function () {
+                } else {
                     showStatus('No se pudo conectar. Inténtalo de nuevo.', 'error');
-                })
-                .finally(function () {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalLabel;
-                });
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+            }
+
+            fetch('https://' + MC.host + '/subscribe/post?u=' + MC.u + '&id=' + MC.id + '&f_id=' + MC.f_id, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+                keepalive: true,
+            })
+                .then(function () { finish(true); })
+                .catch(function () { finish(false); });
+
+            // Don't block the UI on Mailchimp's slow opaque response.
+            setTimeout(function () { finish(true); }, 1000);
         });
     </script>
 </body>
