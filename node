@@ -1,0 +1,5 @@
+#!/bin/sh
+# Wrapper so this project can run Node without a system-wide install.
+# Usage: ./node <script.js> [args...]
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec "$DIR/.node/node-v24.15.0-darwin-arm64/bin/node" "$@"

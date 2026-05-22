@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RC Celta — Partidos</title>
+  <style>
+    :root {
+      --celta-sky: #8FCAE7;
+      --celta-sky-dark: #5B9BC9;
+      --celta-red: #E4002B;
+      --celta-navy: #0A1F44;
+      --celta-ink: #111418;
+      --bg: #f6f8fb;
+
+      /* availability tiers */
+      --ok:   #1f9d57;
+      --warn: #e08a00;
+      --low:  #E4002B;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      color: var(--celta-navy);
+      line-height: 1.5;
+      background:
+        linear-gradient(rgba(8, 24, 56, 0.86), rgba(13, 42, 86, 0.82)),
+        url("assets/landing%20background.jpeg") center / cover no-repeat fixed;
+      background-color: var(--celta-navy);
+    }
+
+    /* ---------- Hero / header ---------- */
+    .hero {
+      text-align: center;
+      padding: 2.6rem 1.5rem 1.6rem;
+      color: #fff;
+    }
+    .hero img.logo {
+      height: 68px;
+      width: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+    }
+    .hero h1 {
+      margin: 0 0 0.3rem;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+    }
+    .hero .tagline {
+      margin: 0 0 1.4rem;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .search {
+      position: relative;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    .search input {
+      width: 100%;
+      height: 2.85rem;
+      padding: 0 2.6rem 0 2.7rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--celta-navy);
+      background-color: #fff;
+      border: 1px solid #d6dde6;
+      border-radius: 6px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .search input::placeholder { color: #8a93a3; }
+    .search input:focus {
+      outline: none;
+      border-color: var(--celta-sky);
+      box-shadow: 0 0 0 3px rgba(143, 202, 231, 0.45), 0 10px 28px rgba(0, 0, 0, 0.28);
+    }
+    .search .ico {
+      position: absolute;
+      left: 0.9rem; top: 50%; transform: translateY(-50%);
+      color: #8a93a3; pointer-events: none;
+    }
+    .search .clear {
+      position: absolute;
+      right: 0.6rem; top: 50%; transform: translateY(-50%);
+      width: 1.5rem; height: 1.5rem; border-radius: 50%;
+      border: none; background: #e3e8ef; color: #5a6577;
+      font-size: 1rem; line-height: 1; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+    }
+    .search.has-value .clear { display: flex; }
+    .search .clear:hover { background: #d2dae4; color: var(--celta-navy); }
+
+    /* ---------- Toolbar (stats + legend) ---------- */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.7rem;
+      margin: 0 0 1.5rem;
+    }
+    .stat {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      padding: 0.4rem 0.85rem;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 0.45rem;
+    }
+    .stat b { font-size: 1.05rem; font-weight: 800; }
+    .stat span {
+      font-size: 0.64rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.72);
+    }
+    .legend {
+      margin-left: auto;
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.72rem;
+    }
+    .legend .sw { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .legend .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; }
+    .dot.ok { background: var(--ok); }
+    .dot.warn { background: var(--warn); }
+    .dot.low { background: var(--low); }
+
+    /* ---------- Grid ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 4px;
+      border-top: 4px solid var(--celta-sky);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    /* the one card that links to the ¡Avísame! landing page */
+    .card.is-link {
+      border-top-color: var(--celta-red);
+      cursor: pointer;
+    }
+    .card.is-link:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
+    }
+
+    .card .img {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, var(--celta-navy), var(--celta-sky-dark));
+      overflow: hidden;
+    }
+    .card .img img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+      padding: 1.1rem;
+    }
+    .card .img .placeholder {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      color: var(--celta-sky-dark); font-size: 2rem;
+    }
+    .ribbon {
+      position: absolute; top: 0.7rem; left: 0.7rem;
+      background: var(--celta-red); color: #fff;
+      font-size: 0.6rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.28rem 0.6rem; border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(228, 0, 43, 0.4);
+    }
+
+    .card .body {
+      padding: 1rem 1.15rem 0.4rem;
+      display: flex; flex-direction: column;
+      flex: 1;
+    }
+    .card .head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.6rem; margin-bottom: 0.6rem;
+    }
+    .card .title {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--celta-navy);
+    }
+    .card .subtitle {
+      margin: 0.12rem 0 0;
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #8a93a3;
+    }
+    .status {
+      flex-shrink: 0;
+      font-size: 0.6rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #fff; padding: 0.25rem 0.55rem;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .status--on { background: var(--celta-sky-dark); }
+    .status--out { background: var(--celta-red); }
+    .status--soon { background: #8a93a3; }
+
+    .meta {
+      list-style: none; margin: 0 0 0.7rem; padding: 0;
+      display: grid; gap: 0.26rem;
+    }
+    .meta li { display: flex; gap: 0.5rem; font-size: 0.8rem; color: var(--celta-navy); }
+    .meta li span {
+      flex: 0 0 4rem;
+      font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: #8a93a3; padding-top: 0.06rem;
+    }
+
+    .avail { margin-top: auto; padding-top: 0.2rem; }
+    .avail .bar {
+      height: 6px; border-radius: 999px; background: #e3e8ef;
+      overflow: hidden; margin-bottom: 0.32rem;
+    }
+    .avail .bar span { display: block; height: 100%; border-radius: 999px; }
+    .avail .bar span.ok   { background: var(--ok); }
+    .avail .bar span.warn { background: var(--warn); }
+    .avail .bar span.low  { background: var(--low); }
+    .avail .text {
+      margin: 0; font-size: 0.74rem; font-weight: 700; text-align: right;
+    }
+    .avail .text.ok   { color: var(--ok); }
+    .avail .text.warn { color: var(--warn); }
+    .avail .text.low  { color: var(--low); }
+
+    .cta {
+      margin: 0.85rem 1.15rem 1.15rem;
+      padding: 0.7rem 1rem;
+      text-align: center;
+      font-size: 0.82rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #fff; background: var(--celta-red);
+      border-radius: 4px;
+    }
+    .card.is-link:hover .cta { background: #c20025; }
+
+    .foot {
+      margin: 0.6rem 1.15rem 1.15rem;
+      font-size: 0.68rem; color: #b0b8c4;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 4px;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: #5a6577;
+    }
+    .empty b { display: block; color: var(--celta-navy); font-size: 1.1rem; margin-bottom: 0.3rem; }
+
+    @media (max-width: 600px) {
+      body { background-attachment: scroll; }
+      .hero h1 { font-size: 1.9rem; }
+      .grid { grid-template-columns: 1fr; }
+      .legend { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <img class="logo" src="assets/rc-celta-logo.png" alt="RC Celta">
+    <h1>Partidos</h1>
+    <p class="tagline">Disponibilidad en directo · Canal ONEBOX 2287</p>
+    <div class="search" id="search-wrap">
+      <svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input id="q" type="search" placeholder="Buscar por partido o recinto..." autocomplete="off" spellcheck="false">
+      <button class="clear" id="clear" aria-label="Borrar búsqueda">×</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div class="stat"><b id="stat-count">—</b><span>Partidos</span></div>
+      <div class="stat"><b id="stat-venues">—</b><span>Recintos</span></div>
+      <div class="stat"><b id="stat-free">—</b><span>Entradas libres</span></div>
+      <div class="legend">
+        <span class="sw"><span class="dot ok"></span> Muchas entradas</span>
+        <span class="sw"><span class="dot warn"></span> Llenándose</span>
+        <span class="sw"><span class="dot low"></span> Casi agotado</span>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <script>
+    // The match wired to the ¡Avísame! landing page (landing.html is baked
+    // for this exact session by generate-landing.js).
+    const LINKED_SESSION_ID = 240895;
+    const LANDING_URL = "landing.html";
+    const LOGO = "assets/rc-celta-logo.png"; // shown as every card's picture
+
+    // Snapshot of /catalog-api/v1/sessions for channel 2287.
+    const SESSIONS = [{"id":240895,"title":"numerado","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2020-02-12T21:00:00+01:00","price_min":10,"price_max":50,"total":14959,"available":14372,"for_sale":true,"sold_out":false},{"id":249468,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/sesion/249468/177203_634020_1739950849300.jpg","start":"2020-11-25T15:00:00+01:00","price_min":10,"price_max":50,"total":14958,"available":14158,"for_sale":true,"sold_out":false},{"id":617439,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/sesion/617439/235086_911226_1751532170008.jpg","start":"2025-07-17T12:00:00+02:00","price_min":8,"price_max":8,"total":17211,"available":17196,"for_sale":true,"sold_out":false},{"id":509945,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/sesion/509945/227981_860237_1739951200209.jpg","start":"2026-03-29T12:00:00+02:00","price_min":8,"price_max":8,"total":17211,"available":16040,"for_sale":true,"sold_out":false},{"id":569823,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/sesion/569823/227994_952677_1739952263015.jpg","start":"2026-03-31T12:00:00+02:00","price_min":8,"price_max":8,"total":17211,"available":16617,"for_sale":true,"sold_out":false},{"id":613473,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/sesion/613473/234112_969368_1749117111739.jpg","start":"2026-03-31T12:00:00+02:00","price_min":8,"price_max":8,"total":17211,"available":16670,"for_sale":true,"sold_out":false},{"id":616004,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-01T12:00:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17139,"for_sale":true,"sold_out":false},{"id":616005,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-06T12:00:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17172,"for_sale":true,"sold_out":false},{"id":617422,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:00:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17195,"for_sale":true,"sold_out":false},{"id":617423,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:06:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17204,"for_sale":true,"sold_out":false},{"id":617424,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:12:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17211,"for_sale":true,"sold_out":false},{"id":617425,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:18:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17203,"for_sale":true,"sold_out":false},{"id":617426,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:24:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17204,"for_sale":true,"sold_out":false},{"id":617427,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:30:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17211,"for_sale":true,"sold_out":false},{"id":617428,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:36:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17209,"for_sale":true,"sold_out":false},{"id":617429,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:42:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17211,"for_sale":true,"sold_out":false},{"id":617430,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:48:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17211,"for_sale":true,"sold_out":false},{"id":617431,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T10:54:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17198,"for_sale":true,"sold_out":false},{"id":617432,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T11:00:00+02:00","price_min":15,"price_max":15,"total":17211,"available":17210,"for_sale":true,"sold_out":false},{"id":617433,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Estadio Saprissa","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-04-07T11:06:00+02:00","price_min":0,"price_max":20,"total":17211,"available":17205,"for_sale":true,"sold_out":false},{"id":695442,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Palau Sant Jordi Recinto ejemplo","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-07-05T11:00:00+02:00","price_min":0,"price_max":0,"total":14959,"available":14946,"for_sale":true,"sold_out":false},{"id":695467,"title":"NUMERADO","subtitle":"GIRA 2019","venue":"Palau Sant Jordi Recinto ejemplo","city":"Barcelona","image":"https://s3.amazonaws.com/onebox-repository/pre/1/657/evento/4587/175304_477248_1739950985999.jpg","start":"2026-09-30T11:00:00+02:00","price_min":0,"price_max":0,"total":14959,"available":14958,"for_sale":true,"sold_out":false}];
+
+    const ICONS = {
+      cal: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+      pin: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+    };
+
+    const MONTHS_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+    // Show venue-local wall-clock time exactly as ONEBOX returns it.
+    function formatDateEs(iso) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso || '');
+      if (!m) return iso || 'Fecha por confirmar';
+      const [, y, mo, d, hh, mm] = m;
+      return `${Number(d)} ${MONTHS_ES[Number(mo) - 1]} ${y}, ${hh}:${mm}`;
+    }
+    function groupThousands(n) {
+      return String(n == null ? 0 : n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    // Tier by % AVAILABLE: >50% free = green, 20-50% = amber, <20% = red.
+    function tier(s) {
+      if (s.sold_out || (s.total > 0 && s.available === 0)) return 'low';
+      if (!s.total) return 'warn';
+      const pct = (s.available / s.total) * 100;
+      if (pct > 50) return 'ok';
+      if (pct >= 20) return 'warn';
+      return 'low';
+    }
+
+    function statusOf(s) {
+      if (s.sold_out || (s.total > 0 && s.available === 0)) return { kind: 'out', label: 'Agotado' };
+      if (s.for_sale) return { kind: 'on', label: 'En venta' };
+      return { kind: 'soon', label: 'Próximamente' };
+    }
+
+    function fmtPrice(s) {
+      const a = s.price_min, b = s.price_max;
+      if ((a === 0 || a == null) && (b === 0 || b == null)) return 'Gratis';
+      if (a === b || b == null) return `${a} €`;
+      if (a === 0 || a == null) return `Hasta ${b} €`;
+      return `${a} € – ${b} €`;
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function renderCard(s) {
+      const t = tier(s);
+      const st = statusOf(s);
+      const pctFree = s.total ? Math.round((s.available / s.total) * 100) : 0;
+      const barW = s.total ? Math.max(2, (s.available / s.total) * 100) : 0;
+      const venueLine = s.venue + (s.city ? ', ' + s.city : '');
+      const isLink = s.id === LINKED_SESSION_ID;
+
+      const imgHtml = `<img src="${esc(LOGO)}" alt="RC Celta" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">`;
+      const placeholderStyle = 'display:none;';
+
+      const tag = isLink ? 'a' : 'article';
+      const attrs = isLink
+        ? ` class="card is-link" href="${esc(LANDING_URL)}"`
+        : ` class="card"`;
+
+      const tail = isLink
+        ? `<div class="cta">¡Avísame! →</div>`
+        : `<div class="foot">Detalle no disponible</div>`;
+
+      return `
+        <${tag}${attrs} data-search="${esc((s.title + ' ' + s.venue + ' ' + (s.city||'')).toLowerCase())}">
+          <div class="img">
+            ${imgHtml}
+            <div class="placeholder" style="${placeholderStyle}">⚽</div>
+            ${isLink ? '<span class="ribbon">Entradas</span>' : ''}
+          </div>
+          <div class="body">
+            <div class="head">
+              <div>
+                <p class="title">${esc(s.title || 'Sin título')}</p>
+                ${s.subtitle ? `<p class="subtitle">${esc(s.subtitle)}</p>` : ''}
+              </div>
+              <span class="status status--${st.kind}">${esc(st.label)}</span>
+            </div>
+            <ul class="meta">
+              <li><span>Fecha</span>${esc(formatDateEs(s.start))}</li>
+              <li><span>Recinto</span>${esc(venueLine)}</li>
+              <li><span>Precio</span>${esc(fmtPrice(s))}</li>
+            </ul>
+            <div class="avail">
+              <div class="bar"><span class="${t}" style="width:${barW}%"></span></div>
+              <p class="text ${t}">${groupThousands(s.available)} / ${groupThousands(s.total)} libres (${pctFree}%)</p>
+            </div>
+          </div>
+          ${tail}
+        </${tag}>
+      `;
+    }
+
+    const grid = document.getElementById('grid');
+    const input = document.getElementById('q');
+    const clearBtn = document.getElementById('clear');
+    const wrap = document.getElementById('search-wrap');
+
+    function setStats(list) {
+      document.getElementById('stat-count').textContent = list.length;
+      document.getElementById('stat-venues').textContent =
+        new Set(list.map(s => s.venue).filter(Boolean)).size;
+      const free = list.reduce((a, s) => a + (s.available || 0), 0);
+      document.getElementById('stat-free').textContent = groupThousands(free);
+    }
+
+    function render(filter) {
+      const q = (filter || '').trim().toLowerCase();
+      const list = q
+        ? SESSIONS.filter(s => (s.title + ' ' + s.venue + ' ' + (s.city||'')).toLowerCase().includes(q))
+        : SESSIONS;
+      setStats(list);
+      grid.innerHTML = list.length
+        ? list.map(renderCard).join('')
+        : `<div class="empty"><b>No se encontraron partidos</b>Prueba con otro término de búsqueda.</div>`;
+    }
+
+    input.addEventListener('input', () => {
+      wrap.classList.toggle('has-value', input.value.length > 0);
+      render(input.value);
+    });
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      wrap.classList.remove('has-value');
+      input.focus();
+      render('');
+    });
+
+    render('');
+  </script>
+</body>
+</html>

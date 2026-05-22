@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC Celta — ¡Avísame!</title>
+    <style>
+        :root {
+            --celta-sky: #8FCAE7;
+            --celta-sky-dark: #5B9BC9;
+            --celta-red: #E4002B;
+            --celta-navy: #0A1F44;
+            --celta-ink: #111418;
+            --bg: #f6f8fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, sans-serif;
+            color: var(--celta-navy);
+            line-height: 1.5;
+            background:
+                linear-gradient(rgba(8, 24, 56, 0.78), rgba(13, 42, 86, 0.72)),
+                url("assets/landing%20background.jpeg") center / cover no-repeat fixed;
+            background-color: var(--celta-navy);
+            display: grid;
+            place-items: center;
+            padding: 2rem 1.5rem;
+        }
+
+        main {
+            padding: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        main section {
+            width: 100%;
+            max-width: 640px;
+            margin: 0;
+            background-color: #ffffff;
+            padding: 1.85rem 2.5rem 1.75rem;
+            border-radius: 4px;
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.35);
+            border-top: 4px solid var(--celta-sky);
+            text-align: center;
+        }
+
+        .event-info {
+            text-align: left;
+            border: 1px solid #e3e8ef;
+            border-radius: 4px;
+            background: #f7f9fc;
+            padding: 0.85rem 1.15rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .event-info__head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .event-info__title {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--celta-navy);
+        }
+
+        .event-info__subtitle {
+            margin: 0.1rem 0 0;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #8a93a3;
+        }
+
+        .event-info__status {
+            flex-shrink: 0;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #ffffff;
+            padding: 0.25rem 0.55rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .event-info__status--on {
+            background: var(--celta-sky-dark);
+        }
+
+        .event-info__status--out {
+            background: var(--celta-red);
+        }
+
+        .event-info__meta {
+            list-style: none;
+            margin: 0 0 0.65rem;
+            padding: 0;
+            display: grid;
+            gap: 0.28rem;
+        }
+
+        .event-info__meta li {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--celta-navy);
+        }
+
+        .event-info__meta li span {
+            flex: 0 0 4.25rem;
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #8a93a3;
+            padding-top: 0.08rem;
+        }
+
+        .event-info__bar {
+            height: 5px;
+            border-radius: 999px;
+            background: #e3e8ef;
+            overflow: hidden;
+            margin-bottom: 0.3rem;
+        }
+
+        .event-info__bar span {
+            display: block;
+            height: 100%;
+            background: var(--celta-sky-dark);
+        }
+
+        .event-info__avail-text {
+            margin: 0;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--celta-sky-dark);
+            text-align: right;
+        }
+
+        main section h1 {
+            color: var(--celta-navy);
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            margin: 0 0 0.4rem;
+        }
+
+        main section .intro {
+            color: #4a5365;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0 0 1.1rem;
+        }
+
+        form {
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 0.9rem;
+        }
+
+        form > div {
+            margin-bottom: 0.7rem;
+        }
+
+        form > div:has(> #email),
+        form > div:has(> #grada),
+        form > div:has(> input[type="checkbox"]),
+        form > button[type="submit"],
+        form > #form-status {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--celta-navy);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            height: 2.5rem;
+            padding: 0 0.85rem;
+            font-size: 1rem;
+            font-family: inherit;
+            line-height: 1.4;
+            color: var(--celta-navy);
+            background-color: #ffffff;
+            border: 1px solid #d6dde6;
+            border-radius: 6px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="text"]:hover,
+        input[type="email"]:hover,
+        select:hover {
+            border-color: #b9c3d1;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--celta-sky);
+            box-shadow: 0 0 0 3px rgba(122, 177, 217, 0.25);
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 2.25rem;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%230A1F44' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M1 1l5 5 5-5'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.85rem center;
+            background-size: 12px 8px;
+            cursor: pointer;
+        }
+
+        form > div:has(> input[type="checkbox"]) {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+
+        input[type="checkbox"] {
+            flex-shrink: 0;
+            width: 1.15rem;
+            height: 1.15rem;
+            margin: 0.15rem 0 0;
+            accent-color: var(--celta-red);
+            cursor: pointer;
+        }
+
+        form > div:has(> input[type="checkbox"]) label {
+            margin-bottom: 0;
+            font-weight: normal;
+            line-height: 1.4;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffffff;
+            background-color: var(--celta-red);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.25rem;
+            transition: background-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #c20025;
+            box-shadow: 0 4px 12px rgba(228, 0, 43, 0.25);
+        }
+
+        button[type="submit"]:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.35);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .form-status {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+
+        .form-status--success {
+            color: #0f5132;
+            background-color: #e6f4ea;
+            border-color: #b7dfc4;
+        }
+
+        .form-status--error {
+            color: #842029;
+            background-color: #fdecee;
+            border-color: #f5c2c7;
+        }
+
+        @media (max-width: 600px) {
+            html, body {
+                height: auto;
+            }
+
+            body {
+                background-attachment: scroll;
+                padding: 1.5rem 1rem;
+                min-height: 100vh;
+            }
+
+            main section {
+                padding: 1.75rem 1.25rem 1.5rem;
+            }
+
+            main section h1 {
+                font-size: 1.85rem;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            select {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section>
+            <!-- EVENT-INFO:START (generated from ONEBOX session 240895) -->
+            <div class="event-info">
+                <div class="event-info__head">
+                    <div>
+                        <p class="event-info__title">* API NUMBERED EVENT</p>
+                        <p class="event-info__subtitle">GIRA 2019</p>
+                    </div>
+                    <span class="event-info__status event-info__status--on">En venta</span>
+                </div>
+                <ul class="event-info__meta">
+                    <li><span>Fecha</span>12 feb 2020, 21:00</li>
+                    <li><span>Recinto</span>Estadio Saprissa, Barcelona</li>
+                    <li><span>Precio</span>10 € – 50 €</li>
+                </ul>
+                <div class="event-info__avail">
+                    <div class="event-info__bar"><span style="width: 97%;"></span></div>
+                    <p class="event-info__avail-text">14.369 / 14.786 (97%)</p>
+                </div>
+            </div>
+            <!-- EVENT-INFO:END -->
+            <h1>¡Avísame!</h1>
+            <p class="intro">Recibe un aviso en cuanto se abran las entradas para el próximo partido en Balaídos.</p>
+            <form id="avisame-form">
+                <!-- EVENT-IDS:START -->
+                <input type="hidden" id="session_id" name="session_id" value="240895">
+                <input type="hidden" id="event_id" name="event_id" value="4587">
+                <!-- EVENT-IDS:END -->
+                <div>
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div>
+                    <label for="surname">Apellido</label>
+                    <input type="text" id="surname" name="surname" required>
+                </div>
+
+                <div>
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div>
+                    <label for="grada">Grada preferida</label>
+                    <select id="grada" name="grada" required>
+                        <option value="">Selecciona una grada</option>
+                        <option value="224515">Sector 316 - 83 libres (94%)</option>
+                        <option value="224514">Sector 315 - 106 libres (100%)</option>
+                        <option value="224513">Sector 314 - 112 libres (100%)</option>
+                        <option value="224512">Sector 313 - 104 libres (98%)</option>
+                        <option value="224519">Sector 320 - 106 libres (100%)</option>
+                        <option value="224518">Sector 319 - 112 libres (100%)</option>
+                        <option value="224517">Sector 318 - 81 libres (99%)</option>
+                        <option value="224516">Sector 317 - 36 libres (100%)</option>
+                        <option value="224521">Sector 322 - 102 libres (96%)</option>
+                        <option value="224520">Sector 321 - 109 libres (97%)</option>
+                        <option value="224531">Sector 107 E - 106 libres (95%)</option>
+                        <option value="224530">Sector 106 E - 83 libres (99%)</option>
+                        <option value="224529">Sector 105 E - 46 libres (55%)</option>
+                        <option value="224535">Sector 113 D - 217 libres (90%)</option>
+                        <option value="224534">Sector 112 D - 120 libres (100%)</option>
+                        <option value="224533">Sector 109 E - 55 libres (98%)</option>
+                        <option value="224532">Sector 108 E - 110 libres (98%)</option>
+                        <option value="224539">Sector 119 E - 108 libres (96%)</option>
+                        <option value="224538">Sector 118 E - 55 libres (98%)</option>
+                        <option value="224537">Sector 115 D - 119 libres (99%)</option>
+                        <option value="224536">Sector 114 D - 235 libres (98%)</option>
+                        <option value="224542">Sector 122 E - 79 libres (94%)</option>
+                        <option value="224541">Sector 121 E - 80 libres (95%)</option>
+                        <option value="224540">Sector 120 E - 110 libres (98%)</option>
+                        <option value="224551">Pista - B3 - 10 libres (100%)</option>
+                        <option value="224550">Pista - B2 - 10 libres (50%)</option>
+                        <option value="224549">Pista - B1 - 20 libres (100%)</option>
+                        <option value="224555">Pista A2 - 3 libres (15%)</option>
+                        <option value="224554">Pista A1 - 10 libres (100%)</option>
+                        <option value="224553">Pista C2 - 21 libres (52%)</option>
+                        <option value="224552">Pista C1 - 26 libres (65%)</option>
+                        <option value="224559">Pista B3 - 9 libres (90%)</option>
+                        <option value="224558">Pista B2 - 8 libres (40%)</option>
+                        <option value="224557">Pista B1 - 20 libres (100%)</option>
+                        <option value="224556">Pista A3 - 18 libres (90%)</option>
+                        <option value="224563">Minusvalidos A - 10 libres (100%)</option>
+                        <option value="224562">Minusvalidos B - 10 libres (100%)</option>
+                        <option value="224561">Pista - C2 - 10 libres (50%)</option>
+                        <option value="224560">Pista - C1 - 14 libres (70%)</option>
+                        <option value="224455">Sector 107 - 183 libres (95%)</option>
+                        <option value="224454">Sector 106 - 172 libres (93%)</option>
+                        <option value="224453">Sector 105 - 175 libres (97%)</option>
+                        <option value="224459">Sector 111 - 66 libres (100%)</option>
+                        <option value="224458">Sector 110 - 130 libres (100%)</option>
+                        <option value="224457">Sector 109 - 189 libres (98%)</option>
+                        <option value="224456">Sector 108 - 176 libres (91%)</option>
+                        <option value="224463">Sector 116 - 66 libres (100%)</option>
+                        <option value="224462">Sector 114 - 155 libres (80%)</option>
+                        <option value="224461">Sector 113 - 175 libres (91%)</option>
+                        <option value="224460">Sector 112 - 213 libres (99%)</option>
+                        <option value="224467">Sector 119 - 185 libres (96%)</option>
+                        <option value="224466">Sector 118 - 190 libres (98%)</option>
+                        <option value="224465">Sector 117 - 134 libres (99%)</option>
+                        <option value="224464">Sector 115 - 172 libres (82%)</option>
+                        <option value="224470">Sector 122 - 169 libres (92%)</option>
+                        <option value="224469">Sector 121 - 174 libres (96%)</option>
+                        <option value="224468">Sector 120 - 191 libres (99%)</option>
+                        <option value="224479">Sector Palco / Llotja - 204 libres (100%)</option>
+                        <option value="224483">Sector 210 - 120 libres (100%)</option>
+                        <option value="224482">Sector 209 - 233 libres (97%)</option>
+                        <option value="224481">Sector 208 - 247 libres (99%)</option>
+                        <option value="224480">Sector 207 - 170 libres (99%)</option>
+                        <option value="224487">Sector 214 - 257 libres (100%)</option>
+                        <option value="224486">Sector 213 - 254 libres (99%)</option>
+                        <option value="224485">Sector 212 - 255 libres (99%)</option>
+                        <option value="224484">Sector 211 - 280 libres (99%)</option>
+                        <option value="224491">Sector 218 - 238 libres (99%)</option>
+                        <option value="224490">Sector 217 - 129 libres (99%)</option>
+                        <option value="224489">Sector 216 - 272 libres (100%)</option>
+                        <option value="224488">Sector 215 - 256 libres (100%)</option>
+                        <option value="224495">Sector 222 - 261 libres (98%)</option>
+                        <option value="224494">Sector 221 - 270 libres (100%)</option>
+                        <option value="224493">Sector 220 - 249 libres (100%)</option>
+                        <option value="224492">Sector 219 - 250 libres (100%)</option>
+                        <option value="224507">Sector 308 - 106 libres (100%)</option>
+                        <option value="224506">Sector 307 - 111 libres (99%)</option>
+                        <option value="224505">Sector 306 - 106 libres (100%)</option>
+                        <option value="224504">Sector 305 - 113 libres (97%)</option>
+                        <option value="224511">Sector 312 - 112 libres (100%)</option>
+                        <option value="224510">Sector 311 - 88 libres (100%)</option>
+                        <option value="224509">Sector 310 - 29 libres (97%)</option>
+                        <option value="224508">Sector 309 - 88 libres (100%)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="privacy" name="privacy" required>
+                    <label for="privacy">Acepto la política de privacidad</label>
+                </div>
+
+                <button type="submit">Avísame</button>
+
+                <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('avisame-form');
+        const status = document.getElementById('form-status');
+
+        function showStatus(message, kind) {
+            status.textContent = message;
+            status.classList.remove('form-status--success', 'form-status--error');
+            status.classList.add(kind === 'success' ? 'form-status--success' : 'form-status--error');
+            status.hidden = false;
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                showStatus('Por favor, completa todos los campos antes de enviar.', 'error');
+                return;
+            }
+
+            const selected = form.grada.selectedOptions[0];
+            const payload = {
+                name: form.name.value.trim(),
+                surname: form.surname.value.trim(),
+                email: form.email.value.trim(),
+                gradaId: form.grada.value,
+                gradaLabel: selected ? selected.textContent : '',
+                sessionId: form.session_id.value,
+                eventId: form.event_id.value,
+                privacy: form.privacy.checked,
+            };
+
+            const originalLabel = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando…';
+
+            try {
+                const res = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const result = await res.json().catch(() => ({}));
+
+                if (res.ok && result.ok) {
+                    showStatus('¡Listo! Te avisaremos en cuanto se abran las entradas.', 'success');
+                    form.reset();
+                } else {
+                    showStatus(result.error || 'No se pudo completar el registro. Inténtalo de nuevo.', 'error');
+                }
+            } catch (err) {
+                showStatus('No se pudo conectar con el servidor. Inténtalo de nuevo.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+            }
+        });
+    </script>
+</body>
+</html>

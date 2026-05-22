@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ONEBOX API · RC Celta Integration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg:        #0b0e14;
+      --bg-2:      #11151c;
+      --panel:     #141923;
+      --panel-2:   #1a1f2b;
+      --border:    #1f2735;
+      --border-2:  #2a3344;
+      --text:      #d6deeb;
+      --text-dim:  #8b97ac;
+      --text-mute: #5d6a82;
+      --accent:    #7aa2f7;
+      --accent-2:  #bb9af7;
+      --green:     #9ece6a;
+      --orange:    #ff9e64;
+      --red:       #f7768e;
+      --yellow:    #e0af68;
+      --cyan:      #7dcfff;
+      --code-bg:   #0d1117;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+      font-size: 14.5px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    code, pre, .mono {
+      font-family: "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Top bar */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(11, 14, 20, 0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid; place-items: center;
+      color: #0b0e14; font-weight: 700; font-size: 15px;
+    }
+    .title { font-weight: 600; font-size: 15px; letter-spacing: 0.2px; }
+    .subtitle { font-size: 12px; color: var(--text-dim); }
+    .topbar .meta { display: flex; align-items: center; gap: 12px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px; color: var(--text-dim);
+    }
+    .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .sidebar {
+      position: sticky; top: 60px;
+      align-self: start;
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+      padding: 28px 16px 28px 28px;
+      border-right: 1px solid var(--border);
+    }
+    .sidebar .group {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--text-mute); margin: 18px 0 6px;
+    }
+    .sidebar a {
+      display: block;
+      padding: 6px 10px;
+      color: var(--text-dim);
+      border-radius: 6px;
+      font-size: 13.5px;
+      margin-left: -10px;
+    }
+    .sidebar a:hover { background: var(--panel); color: var(--text); text-decoration: none; }
+    .sidebar a.active { background: var(--panel-2); color: var(--accent); }
+
+    main { padding: 36px 48px 80px; min-width: 0; }
+
+    h1 { font-size: 28px; font-weight: 600; margin: 0 0 8px; letter-spacing: -0.01em; }
+    h2 { font-size: 22px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+    h3 { font-size: 13px; font-weight: 600; margin: 0 0 10px;
+         color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+    p  { color: var(--text-dim); margin: 0 0 14px; }
+    p strong { color: var(--text); font-weight: 500; }
+
+    .lede { font-size: 15px; max-width: 760px; margin-bottom: 28px; }
+
+    /* Endpoint section */
+    .endpoint {
+      margin: 56px 0;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+    .endpoint:first-of-type { border-top: none; padding-top: 0; }
+
+    .endpoint-head { margin-bottom: 8px; }
+    .path-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin: 6px 0 14px;
+    }
+    .method {
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em;
+      padding: 4px 9px; border-radius: 5px;
+      color: #0b0e14;
+    }
+    .method.get  { background: var(--green); }
+    .method.post { background: var(--orange); }
+    .path {
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 14.5px; color: var(--text);
+    }
+    .path .var { color: var(--accent-2); }
+
+    .desc { max-width: 760px; }
+
+    /* Two-column request/response */
+    .split {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .split { grid-template-columns: 1fr; }
+      main { padding: 24px 18px 60px; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+    .panel-head h3 { margin: 0; font-size: 11.5px; }
+    .status {
+      font-family: "SF Mono", Menlo, monospace; font-size: 11.5px;
+      padding: 3px 8px; border-radius: 4px;
+      background: rgba(158, 206, 106, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(158, 206, 106, 0.3);
+    }
+
+    /* code blocks */
+    pre {
+      margin: 0;
+      padding: 14px 16px;
+      background: var(--code-bg);
+      color: var(--text);
+      overflow-x: auto;
+      line-height: 1.55;
+      tab-size: 2;
+    }
+    .panel pre + pre { border-top: 1px solid var(--border); }
+
+    .label {
+      font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-mute);
+      padding: 10px 16px 4px; background: var(--code-bg);
+      border-top: 1px solid var(--border);
+    }
+    .panel > .label:first-child { border-top: none; }
+
+    /* json colors */
+    .json-key  { color: var(--cyan); }
+    .json-str  { color: var(--green); }
+    .json-num  { color: var(--orange); }
+    .json-bool { color: var(--accent-2); }
+    .json-null { color: var(--text-mute); font-style: italic; }
+    .comment   { color: var(--text-mute); font-style: italic; }
+    .redacted  { color: var(--yellow); }
+
+    /* curl colors */
+    .cmd      { color: var(--accent); }
+    .flag     { color: var(--accent-2); }
+    .val      { color: var(--green); }
+
+    /* headers list */
+    .headers {
+      padding: 8px 16px 12px;
+      background: var(--code-bg);
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 12.5px;
+    }
+    .headers .row { display: flex; gap: 10px; padding: 3px 0; }
+    .headers .h-key { color: var(--cyan); min-width: 170px; }
+    .headers .h-val { color: var(--text); word-break: break-all; }
+
+    /* note callouts */
+    .note {
+      margin: 14px 0;
+      padding: 12px 14px;
+      background: rgba(122, 162, 247, 0.07);
+      border: 1px solid rgba(122, 162, 247, 0.25);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+    .note.warn {
+      background: rgba(224, 175, 104, 0.07);
+      border-color: rgba(224, 175, 104, 0.3);
+      border-left-color: var(--yellow);
+    }
+
+    /* params table */
+    table.params {
+      width: 100%; border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 8px 0 4px;
+    }
+    .params th, .params td {
+      text-align: left; padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .params th {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-mute); font-weight: 500;
+    }
+    .params td.k { font-family: "SF Mono", Menlo, monospace; color: var(--cyan); white-space: nowrap; }
+    .params td.t { font-family: "SF Mono", Menlo, monospace; color: var(--text-dim); font-size: 12.5px; }
+    .params td.d { color: var(--text-dim); }
+
+    .badge-required {
+      font-size: 10px; color: var(--red);
+      background: rgba(247, 118, 142, 0.12);
+      padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+    }
+
+    .footer {
+      margin-top: 80px; padding-top: 22px;
+      border-top: 1px solid var(--border);
+      color: var(--text-mute); font-size: 12.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">O</div>
+      <div>
+        <div class="title">ONEBOX API</div>
+        <div class="subtitle">RC Celta integration · catalog v1</div>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="pill"><span class="dot"></span> sandbox · channel 2287</span>
+      <span class="pill mono">api.oneboxtds.net</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="group">Endpoints</div>
+      <a href="#auth">1. Authentication</a>
+      <a href="#sessions">2. List matches</a>
+      <a href="#availability">3. Seat availability</a>
+      <div class="group">Reference</div>
+      <a href="#overview">Overview</a>
+      <a href="#flow">Integration flow</a>
+    </nav>
+
+    <main>
+      <section id="overview">
+        <h1>ONEBOX API integration</h1>
+        <p class="lede">
+          Three endpoints power the RC Celta ticketing flow on this channel:
+          obtain a bearer token, fetch the list of available matches, and read
+          per-section seat availability for one match. Every example below was
+          captured against the live sandbox; secrets are redacted so this page
+          is safe to share.
+        </p>
+
+        <div class="note">
+          <strong>Base URL</strong> &nbsp;<code>https://api.oneboxtds.net</code><br>
+          <strong>Auth</strong> &nbsp;OAuth 2.0 client credentials &mdash; the access token is short-lived (12 h) and must be sent as <code>Authorization: Bearer &lt;token&gt;</code> on every catalog call.
+        </div>
+      </section>
+
+      <section id="flow">
+        <h2>Integration flow</h2>
+        <p>
+          Each session, the client obtains a token, then calls the catalog
+          endpoints with it. Tokens last <code>43200&nbsp;s</code> (12 h) &mdash;
+          cache them and refresh proactively before expiry.
+        </p>
+        <pre>  <span class="comment">┌─────────────┐    POST /oauth/token   ┌──────────────┐
+  │   Client    │  ───────────────────►  │   ONEBOX     │
+  │  (RC Celta) │  ◄───  access_token    │   Auth       │
+  └─────────────┘                        └──────────────┘
+        │
+        │   GET /catalog-api/v1/sessions                  (Bearer token)
+        ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │  list of matches  ──►  pick one  ──►  GET /sessions/:id/...  │
+  │                                       availability           │
+  └──────────────────────────────────────────────────────────────┘</span></pre>
+      </section>
+
+      <!-- 1. AUTH -->
+      <section id="auth" class="endpoint">
+        <div class="endpoint-head">
+          <h2>Authentication</h2>
+          <div class="path-row">
+            <span class="method post">POST</span>
+            <span class="path">/oauth/token</span>
+          </div>
+          <p class="desc">
+            Exchanges client credentials for a short-lived bearer token. The
+            response also returns the granted <code>scope</code> &mdash; the
+            channel must include <code>api-catalog-all</code> for the calls below
+            to work.
+          </p>
+        </div>
+
+        <table class="params">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="k">grant_type<span class="badge-required">required</span></td><td class="t">string</td><td class="d">Always <code>client_credentials</code>.</td></tr>
+            <tr><td class="k">channel_id<span class="badge-required">required</span></td><td class="t">integer</td><td class="d">Sales channel identifier (RC Celta uses <code>2287</code>).</td></tr>
+            <tr><td class="k">client_id<span class="badge-required">required</span></td><td class="t">string</td><td class="d">Provided by ONEBOX &mdash; <code>seller-channel-client</code>.</td></tr>
+            <tr><td class="k">client_secret<span class="badge-required">required</span></td><td class="t">string</td><td class="d">Channel secret. Store in <code>.env</code>, never commit.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head"><h3>Request</h3><span class="mono" style="color:var(--text-mute);font-size:11.5px">cURL</span></div>
+            <pre><span class="cmd">curl</span> <span class="flag">-X</span> POST <span class="val">https://api.oneboxtds.net/oauth/token</span> \
+  <span class="flag">-H</span> <span class="val">"Content-Type: application/x-www-form-urlencoded"</span> \
+  <span class="flag">--data-urlencode</span> <span class="val">"grant_type=client_credentials"</span> \
+  <span class="flag">--data-urlencode</span> <span class="val">"channel_id=2287"</span> \
+  <span class="flag">--data-urlencode</span> <span class="val">"client_id=seller-channel-client"</span> \
+  <span class="flag">--data-urlencode</span> <span class="val">"client_secret=<span class="redacted">$ONEBOX_CLIENT_SECRET</span>"</span></pre>
+            <div class="label">Headers</div>
+            <div class="headers">
+              <div class="row"><span class="h-key">Content-Type</span><span class="h-val">application/x-www-form-urlencoded</span></div>
+            </div>
+            <div class="label">Body</div>
+            <pre>grant_type=client_credentials
+channel_id=2287
+client_id=seller-channel-client
+client_secret=<span class="redacted">••••••••••••••••••••••••••••••••</span></pre>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Response</h3><span class="status">200 OK</span></div>
+            <pre data-json>{
+  "access_token": "<span class="redacted">eyJhbGci…G2qE</span>",
+  "token_type": "bearer",
+  "expires_in": 43200,
+  "scope": "api-channels-all api-distribution-all api-catalog-all api-external-all api-gateway api-customers-mgmt-all api-orders-mgmt-all",
+  "authInfo": "<span class="redacted">FR5Nn1rO…+Q==</span>",
+  "jti": "<span class="redacted">l6xNwNM-…e5h8</span>"
+}</pre>
+          </div>
+        </div>
+
+        <div class="note warn">
+          <strong>Redacted.</strong> <code>access_token</code>, <code>authInfo</code>, and <code>jti</code> are signed
+          credentials &mdash; treat them like passwords and never embed them in client-side code.
+        </div>
+      </section>
+
+      <!-- 2. SESSIONS -->
+      <section id="sessions" class="endpoint">
+        <div class="endpoint-head">
+          <h2>List matches</h2>
+          <div class="path-row">
+            <span class="method get">GET</span>
+            <span class="path">/catalog-api/v1/sessions</span>
+          </div>
+          <p class="desc">
+            Returns the paginated list of sessions (matches) on the channel.
+            Each item bundles the event, venue, date window, current price
+            range, and a high-level availability summary &mdash; useful for the
+            match listing screen without a second round-trip.
+          </p>
+        </div>
+
+        <table class="params">
+          <thead><tr><th>Query parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="k">limit</td><td class="t">integer</td><td class="d">Page size, default <code>100</code>.</td></tr>
+            <tr><td class="k">offset</td><td class="t">integer</td><td class="d">Zero-based offset for pagination.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head"><h3>Request</h3><span class="mono" style="color:var(--text-mute);font-size:11.5px">cURL</span></div>
+            <pre><span class="cmd">curl</span> <span class="val">https://api.oneboxtds.net/catalog-api/v1/sessions</span> \
+  <span class="flag">-H</span> <span class="val">"Authorization: Bearer <span class="redacted">$ACCESS_TOKEN</span>"</span> \
+  <span class="flag">-H</span> <span class="val">"Accept: application/json"</span></pre>
+            <div class="label">Headers</div>
+            <div class="headers">
+              <div class="row"><span class="h-key">Authorization</span><span class="h-val">Bearer <span class="redacted">eyJhbGci…G2qE</span></span></div>
+              <div class="row"><span class="h-key">Accept</span><span class="h-val">application/json</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Response</h3><span class="status">200 OK</span></div>
+            <pre data-json>{
+  "metadata": {
+    "limit":  100,
+    "total":  22,
+    "offset": 0
+  },
+  "data": [
+    {
+      "id":   240895,
+      "name": "NUMERADO",
+      "type": "SESSION",
+      "event": {
+        "id":   4587,
+        "name": "* API NUMBERED EVENT",
+        "texts": {
+          "title":    { "es-ES": "NUMERADO", "en-US": "" },
+          "subtitle": { "es-ES": "GIRA 2019", "en-US": "2019 TOUR" }
+        },
+        "default_language": "es_ES"
+      },
+      "venue": {
+        "id":   14,
+        "name": "Estadio Saprissa",
+        "location": {
+          "city":      "Barcelona",
+          "country":   { "code": "ES", "name": "España" },
+          "time_zone": "Europe/Berlin"
+        }
+      },
+      "date": {
+        "start":         "2020-02-12T21:00:00+01:00",
+        "end":           "2027-02-06T21:00:00+01:00",
+        "sale_start":    "2019-05-10T10:00:00+02:00",
+        "sale_end":      "2027-02-06T21:00:00+01:00",
+        "booking_start": "2019-11-30T23:00:00Z",
+        "booking_end":   "2025-02-01T20:00:00Z"
+      },
+      "price": {
+        "min":       { "value": 10, "surcharge": { "promoter": 4, "channel": 0 } },
+        "max":       { "value": 50, "surcharge": { "promoter": 4, "channel": 0 } },
+        "min_final": { "value": 10 },
+        "max_final": { "value": 50 }
+      },
+      "availability": {
+        "price_types": [
+          { "id": 32713, "name": "PISTA",  "availability": { "total": 340,  "available": 199  } },
+          { "id": 32714, "name": "VIP",    "availability": { "total": 2176, "available": 2086 } },
+          { "id": 32715, "name": "PISO 1", "availability": { "total": 4625, "available": 4442 } },
+          { "id": 32716, "name": "PISO 2", "availability": { "total": 5422, "available": 5269 } },
+          { "id": 32717, "name": "PISO 3", "availability": { "total": 2396, "available": 2376 } }
+        ]
+      },
+      "for_sale": true,
+      "on_sale":  true,
+      "sold_out": false
+    },
+
+    <span class="comment">// … 21 more sessions (22 total)</span>
+  ]
+}</pre>
+          </div>
+        </div>
+
+        <div class="note">
+          The catalog currently returns <strong>22 sessions</strong> on channel
+          2287. The first item is <code>id 240895</code> &mdash; <em>NUMERADO</em> at
+          <em>Estadio Saprissa</em>. We use that <code>id</code> in the next call.
+        </div>
+      </section>
+
+      <!-- 3. AVAILABILITY -->
+      <section id="availability" class="endpoint">
+        <div class="endpoint-head">
+          <h2>Seat availability for one match</h2>
+          <div class="path-row">
+            <span class="method get">GET</span>
+            <span class="path">/catalog-api/v1/sessions/<span class="var">{sessionId}</span>/availability</span>
+          </div>
+          <p class="desc">
+            Returns a fine-grained breakdown of seat availability for a single
+            session: a global total, per <em>price type</em> (e.g. <code>VIP</code>,
+            <code>PISO&nbsp;1</code>) totals, and per-sector (<code>grada</code>) totals
+            keyed by stadium section. Drives the seat-map and "tickets left"
+            counters.
+          </p>
+        </div>
+
+        <table class="params">
+          <thead><tr><th>Path parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="k">sessionId<span class="badge-required">required</span></td><td class="t">integer</td><td class="d">Session id from the <code>/sessions</code> response.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head"><h3>Request</h3><span class="mono" style="color:var(--text-mute);font-size:11.5px">cURL</span></div>
+            <pre><span class="cmd">curl</span> <span class="val">https://api.oneboxtds.net/catalog-api/v1/sessions/240895/availability</span> \
+  <span class="flag">-H</span> <span class="val">"Authorization: Bearer <span class="redacted">$ACCESS_TOKEN</span>"</span> \
+  <span class="flag">-H</span> <span class="val">"Accept: application/json"</span></pre>
+            <div class="label">Headers</div>
+            <div class="headers">
+              <div class="row"><span class="h-key">Authorization</span><span class="h-val">Bearer <span class="redacted">eyJhbGci…G2qE</span></span></div>
+              <div class="row"><span class="h-key">Accept</span><span class="h-val">application/json</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Response</h3><span class="status">200 OK</span></div>
+            <pre data-json>{
+  "id":   240895,
+  "name": "NUMERADO",
+  "availability": {
+    "type":      "BOUNDED",
+    "total":     14786,
+    "available": 14372
+  },
+  "price_types": [
+    {
+      "id":   32713,
+      "name": "PISTA",
+      "availability": { "type": "BOUNDED", "total": 290,  "available": 199 },
+      "texts": {
+        "name":        { "es-ES": "PISTA CAST",            "en-US": "PISTA ING" },
+        "description": { "es-ES": "<p>PISTA CAST DESC</p>" }
+      },
+      "ui_settings": { "order": 2, "color": "#9E4500" },
+      "code": "ZP1"
+    },
+    {
+      "id":   32714,
+      "name": "VIP",
+      "availability": { "type": "BOUNDED", "total": 1616, "available": 1526 },
+      "ui_settings": { "order": 1, "color": "#FF9966" },
+      "code": "VIP"
+    },
+    {
+      "id":   32715,
+      "name": "PISO 1",
+      "availability": { "type": "BOUNDED", "total": 3098, "available": 2915 },
+      "ui_settings": { "order": 3, "color": "#FF6600" },
+      "code": "PISO 1"
+    },
+
+    <span class="comment">// … 2 more price types</span>
+  ],
+  "sectors": [
+    {
+      "id":   224515,
+      "name": "Sector 316",
+      "code": "Sector 316",
+      "price_types": [
+        {
+          "id":   32717,
+          "name": "PISO 3",
+          "availability": { "type": "BOUNDED", "total": 88, "available": 83 }
+        }
+      ]
+    },
+    {
+      "id":   224514,
+      "name": "Sector 315",
+      "price_types": [
+        { "id": 32717, "name": "PISO 3",
+          "availability": { "type": "BOUNDED", "total": 106, "available": 106 } }
+      ]
+    },
+
+    <span class="comment">// … 80 more sectors (gradas)</span>
+  ]
+}</pre>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Two views of the same inventory.</strong>
+          <code>price_types</code> sums seats by ticket category (good for the
+          pricing widget). <code>sectors</code> breaks the same seats down by
+          physical stadium section, which is what the seat-map UI binds to.
+          The numbers reconcile: every seat counted in a sector also belongs to
+          exactly one price type.
+        </div>
+      </section>
+
+      <div class="footer">
+        Generated from live sandbox responses · channel 2287 ·
+        secrets redacted for sharing.
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Lightweight JSON syntax highlighting that preserves existing inline
+    // <span class="redacted"> / <span class="comment"> markup we have already
+    // hand-placed in the <pre data-json> blocks.
+    document.querySelectorAll('pre[data-json]').forEach(function (pre) {
+      // Walk text nodes only, leaving existing element children untouched.
+      var walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT, null);
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+
+      nodes.forEach(function (node) {
+        var text = node.nodeValue;
+        if (!text.trim()) return;
+
+        // Escape & rebuild as DOM. Regex matches strings (with optional
+        // trailing colon to flag keys), booleans, null, and numbers.
+        var html = text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        html = html.replace(
+          /("(?:\\.|[^"\\])*"\s*:?)|\b(true|false)\b|\b(null)\b|(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
+          function (m, str, bool, nul, num) {
+            if (str)  { return '<span class="' + (/:\s*$/.test(str) ? 'json-key' : 'json-str') + '">' + str + '</span>'; }
+            if (bool) { return '<span class="json-bool">' + bool + '</span>'; }
+            if (nul)  { return '<span class="json-null">' + nul + '</span>'; }
+            if (num)  { return '<span class="json-num">' + num + '</span>'; }
+            return m;
+          }
+        );
+
+        var span = document.createElement('span');
+        span.innerHTML = html;
+        node.parentNode.replaceChild(span, node);
+      });
+    });
+
+    // Sidebar active-link highlight on scroll
+    var links = document.querySelectorAll('.sidebar a[href^="#"]');
+    var sections = Array.from(links).map(function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    });
+    function setActive() {
+      var y = window.scrollY + 120;
+      var idx = 0;
+      sections.forEach(function (s, i) {
+        if (s && s.offsetTop <= y) idx = i;
+      });
+      links.forEach(function (a, i) {
+        a.classList.toggle('active', i === idx);
+      });
+    }
+    window.addEventListener('scroll', setActive, { passive: true });
+    setActive();
+  </script>
+</body>
+</html>
