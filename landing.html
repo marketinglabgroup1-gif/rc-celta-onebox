@@ -506,8 +506,25 @@
     </main>
 
     <script>
+        // ===================================================================
+        // Mailchimp direct submit — no backend (works on GitHub Pages).
+        // Posts straight to the Mailchimp embedded-form endpoint. Verified:
+        // a real submission lands in the "RC celta test" audience (single
+        // opt-in) with name, email and GRADA saved.
+        // Note: GRADAID/SESSIONID/EVENTID only save if you enable those
+        // fields on the Mailchimp embedded form (Audience → Sign up forms →
+        // Embedded forms). GRADA (the section name) already saves.
+        // ===================================================================
+        const MC = {
+            host: 'www.us10.list-manage.com',      // your account's signup host
+            u:    '2d615f63dca63733b74411ff2',     // your Mailchimp account id
+            id:   'ce9f7ae651',                    // your "RC celta test" audience id
+            f_id: '001ec5e5f0',                    // your embedded form id (required!)
+        };
+
         const form = document.getElementById('avisame-form');
         const status = document.getElementById('form-status');
+        const submitBtn = form.querySelector('button[type="submit"]');
 
         function showStatus(message, kind) {
             status.textContent = message;
@@ -516,9 +533,12 @@
             status.hidden = false;
         }
 
-        const submitBtn = form.querySelector('button[type="submit"]');
+        // "Sector 316 - 83 libres (94%)" -> "Sector 316"
+        function cleanGrada(label) {
+            return String(label || '').replace(/\s*-\s*\d[\d.]*\s*libres.*$/i, '').trim();
+        }
 
-        form.addEventListener('submit', async function (event) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
 
             if (!form.checkValidity()) {
@@ -527,42 +547,58 @@
                 return;
             }
 
+            // Safety: never show a fake "success" if the host isn't set yet.
+            if (!MC.host) {
+                showStatus('Configuración pendiente: falta la dirección de Mailchimp (MC.host).', 'error');
+                return;
+            }
+
             const selected = form.grada.selectedOptions[0];
-            const payload = {
-                name: form.name.value.trim(),
-                surname: form.surname.value.trim(),
-                email: form.email.value.trim(),
-                gradaId: form.grada.value,
-                gradaLabel: selected ? selected.textContent : '',
-                sessionId: form.session_id.value,
-                eventId: form.event_id.value,
-                privacy: form.privacy.checked,
+            const fields = {
+                EMAIL:     form.email.value.trim(),
+                FNAME:     form.name.value.trim(),
+                LNAME:     form.surname.value.trim(),
+                GRADA:     cleanGrada(selected ? selected.textContent : ''),
+                GRADAID:   form.grada.value,
+                SESSIONID: form.session_id.value,
+                EVENTID:   form.event_id.value,
             };
+
+            const body = new URLSearchParams();
+            Object.keys(fields).forEach(function (k) { body.set(k, fields[k]); });
+            body.set('b_' + MC.u + '_' + MC.id, '');  // anti-bot honeypot (must stay empty)
 
             const originalLabel = submitBtn.textContent;
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviando…';
 
-            try {
-                const res = await fetch('/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                const result = await res.json().catch(() => ({}));
-
-                if (res.ok && result.ok) {
+            // mode:'no-cors' lets the browser POST cross-site to Mailchimp.
+            // The response is opaque (unreadable), so a non-throwing request
+            // is treated as success — same approach as the classmate's page.
+            fetch('https://' + MC.host + '/subscribe/post?u=' + MC.u + '&id=' + MC.id + '&f_id=' + MC.f_id, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+            })
+                .then(function () {
                     showStatus('¡Listo! Te avisaremos en cuanto se abran las entradas.', 'success');
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'avisame_signup', {
+                            match_id: fields.SESSIONID,
+                            grada_id: fields.GRADAID,
+                            grada_name: fields.GRADA,
+                        });
+                    }
                     form.reset();
-                } else {
-                    showStatus(result.error || 'No se pudo completar el registro. Inténtalo de nuevo.', 'error');
-                }
-            } catch (err) {
-                showStatus('No se pudo conectar con el servidor. Inténtalo de nuevo.', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalLabel;
-            }
+                })
+                .catch(function () {
+                    showStatus('No se pudo conectar. Inténtalo de nuevo.', 'error');
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalLabel;
+                });
         });
     </script>
 </body>
