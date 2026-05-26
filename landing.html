@@ -196,8 +196,17 @@
         form > div:has(> #grada),
         form > div:has(> input[type="checkbox"]),
         form > button[type="submit"],
+        form > .legal,
         form > #form-status {
             grid-column: 1 / -1;
+        }
+
+        .legal {
+            margin: 0.75rem 0 0;
+            font-size: 0.72rem;
+            line-height: 1.4;
+            color: #6b7384;
+            text-align: center;
         }
 
         label {
@@ -499,6 +508,8 @@
                 </div>
 
                 <button type="submit">Avísame</button>
+
+                <p class="legal">Tus datos serán utilizados exclusivamente para avisarte cuando haya entradas disponibles. Puedes darte de baja en cualquier momento.</p>
 
                 <div id="form-status" class="form-status" role="status" aria-live="polite" hidden></div>
             </form>
