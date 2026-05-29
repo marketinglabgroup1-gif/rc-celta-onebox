@@ -261,6 +261,7 @@
         }
 
         form > div:has(> #email),
+        form > div:has(> #tickets),
         form > div:has(> #grada),
         form > div:has(> input[type="checkbox"]),
         form > button[type="submit"],
@@ -487,6 +488,18 @@
                 <div>
                     <label for="email">Correo electrónico</label>
                     <input type="email" id="email" name="email" required>
+                </div>
+
+                <div>
+                    <label for="tickets">Número de entradas</label>
+                    <select id="tickets" name="tickets" required>
+                        <option value="1" selected>1 entrada</option>
+                        <option value="2">2 entradas</option>
+                        <option value="3">3 entradas</option>
+                        <option value="4">4 entradas</option>
+                        <option value="5">5 entradas</option>
+                        <option value="6">6 entradas</option>
+                    </select>
                 </div>
 
                 <div>
