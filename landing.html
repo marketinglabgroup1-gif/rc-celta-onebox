@@ -265,8 +265,16 @@
         form > div:has(> input[type="checkbox"]),
         form > button[type="submit"],
         form > .legal,
+        form > .stadium,
         form > #form-status {
             grid-column: 1 / -1;
+        }
+
+        #grada-dot {
+            transition: cx 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        cy 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.2s ease;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
         }
 
         .legal {
@@ -461,54 +469,6 @@
             <!-- EVENT-INFO:END -->
             <h1>¡Avísame!</h1>
             <p class="intro">Recibe un aviso en cuanto se abran las entradas para el próximo partido en Balaídos.</p>
-            <div class="stadium" aria-label="Plano del estadio Balaídos">
-                <p class="stadium__label">Plano del estadio · Balaídos</p>
-                <svg class="stadium__svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema de Balaídos con las gradas Río, Tribuna, Marcador y Gol">
-                    <defs>
-                        <clipPath id="stadium-clip">
-                            <rect x="18" y="22" width="284" height="156" rx="56" ry="50"/>
-                        </clipPath>
-                        <pattern id="obras-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-                            <rect width="6" height="6" fill="#9aa3b3"/>
-                            <line x1="0" y1="0" x2="0" y2="6" stroke="#6f7886" stroke-width="2"/>
-                        </pattern>
-                    </defs>
-                    <g clip-path="url(#stadium-clip)">
-                        <polygon points="18,22 302,22 268,60 52,60" fill="#B8001E"/>
-                        <polygon points="52,60 268,60 232,82 88,82" fill="#E4002B"/>
-                        <polygon points="18,178 302,178 268,140 52,140" fill="#0A1F44"/>
-                        <polygon points="52,140 268,140 232,118 88,118" fill="#1A3367"/>
-                        <polygon points="18,22 18,178 52,140 52,60" fill="#5B9BC9"/>
-                        <polygon points="52,60 52,140 88,118 88,82" fill="#8FCAE7"/>
-                        <polygon points="302,22 302,178 268,140 268,60" fill="url(#obras-hatch)"/>
-                        <polygon points="268,60 268,140 232,118 232,82" fill="url(#obras-hatch)" opacity="0.55"/>
-                        <line x1="18" y1="22" x2="88" y2="82" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
-                        <line x1="302" y1="22" x2="232" y2="82" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
-                        <line x1="18" y1="178" x2="88" y2="118" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
-                        <line x1="302" y1="178" x2="232" y2="118" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
-                        <line x1="52" y1="60" x2="268" y2="60" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
-                        <line x1="52" y1="140" x2="268" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
-                        <line x1="52" y1="60" x2="52" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
-                        <line x1="268" y1="60" x2="268" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
-                    </g>
-                    <rect x="18" y="22" width="284" height="156" rx="56" ry="50" fill="none" stroke="#d6dde6" stroke-width="0.8"/>
-                    <rect x="88" y="82" width="144" height="36" fill="#1f7a34" rx="1.5"/>
-                    <line x1="160" y1="84" x2="160" y2="116" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.7"/>
-                    <circle cx="160" cy="100" r="6" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.7"/>
-                    <line x1="88" y1="93" x2="88" y2="107" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.5"/>
-                    <line x1="232" y1="93" x2="232" y2="107" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.5"/>
-                    <text x="160" y="45" text-anchor="middle" font-size="10" letter-spacing="3" fill="#ffffff">RÍO</text>
-                    <text x="160" y="164" text-anchor="middle" font-size="10" letter-spacing="3" fill="#ffffff">TRIBUNA</text>
-                    <text x="35" y="100" text-anchor="middle" font-size="7.5" letter-spacing="1.8" fill="#0A1F44" transform="rotate(-90 35 100)">MARCADOR</text>
-                    <text x="285" y="100" text-anchor="middle" font-size="7.5" letter-spacing="1.8" fill="#0A1F44" transform="rotate(90 285 100)">GOL · EN OBRAS</text>
-                </svg>
-                <ul class="stadium__legend">
-                    <li><i style="background: #E4002B;"></i><div><strong>Río</strong><span>Alto / Baixo · Central · Área · Córner</span></div></li>
-                    <li><i style="background: #0A1F44;"></i><div><strong>Tribuna</strong><span>Alta / Baixa · Central · Área · Córner</span></div></li>
-                    <li><i style="background: #8FCAE7;"></i><div><strong>Marcador</strong><span>Alto Central · Córner · Baixo</span></div></li>
-                    <li><i style="background: #9aa3b3;"></i><div><strong>Gol</strong><span>Zona en obras</span></div></li>
-                </ul>
-            </div>
             <form id="avisame-form">
                 <!-- EVENT-IDS:START -->
                 <input type="hidden" id="session_id" name="session_id" value="240895">
@@ -618,6 +578,56 @@
                     </select>
                 </div>
 
+                <div class="stadium" aria-label="Plano del estadio Balaídos">
+                    <p class="stadium__label">Plano del estadio · Balaídos</p>
+                    <svg class="stadium__svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema de Balaídos con las gradas Río, Tribuna, Marcador y Gol">
+                        <defs>
+                            <clipPath id="stadium-clip">
+                                <rect x="18" y="22" width="284" height="156" rx="56" ry="50"/>
+                            </clipPath>
+                            <pattern id="obras-hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+                                <rect width="6" height="6" fill="#9aa3b3"/>
+                                <line x1="0" y1="0" x2="0" y2="6" stroke="#6f7886" stroke-width="2"/>
+                            </pattern>
+                        </defs>
+                        <g clip-path="url(#stadium-clip)">
+                            <polygon points="18,22 302,22 268,60 52,60" fill="#B8001E"/>
+                            <polygon points="52,60 268,60 232,82 88,82" fill="#E4002B"/>
+                            <polygon points="18,178 302,178 268,140 52,140" fill="#0A1F44"/>
+                            <polygon points="52,140 268,140 232,118 88,118" fill="#1A3367"/>
+                            <polygon points="18,22 18,178 52,140 52,60" fill="#5B9BC9"/>
+                            <polygon points="52,60 52,140 88,118 88,82" fill="#8FCAE7"/>
+                            <polygon points="302,22 302,178 268,140 268,60" fill="url(#obras-hatch)"/>
+                            <polygon points="268,60 268,140 232,118 232,82" fill="url(#obras-hatch)" opacity="0.55"/>
+                            <line x1="18" y1="22" x2="88" y2="82" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
+                            <line x1="302" y1="22" x2="232" y2="82" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
+                            <line x1="18" y1="178" x2="88" y2="118" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
+                            <line x1="302" y1="178" x2="232" y2="118" stroke="#ffffff" stroke-opacity="0.22" stroke-width="0.7"/>
+                            <line x1="52" y1="60" x2="268" y2="60" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
+                            <line x1="52" y1="140" x2="268" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
+                            <line x1="52" y1="60" x2="52" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
+                            <line x1="268" y1="60" x2="268" y2="140" stroke="#ffffff" stroke-opacity="0.25" stroke-width="0.7"/>
+                        </g>
+                        <rect x="18" y="22" width="284" height="156" rx="56" ry="50" fill="none" stroke="#d6dde6" stroke-width="0.8"/>
+                        <rect x="88" y="82" width="144" height="36" fill="#1f7a34" rx="1.5"/>
+                        <line x1="160" y1="84" x2="160" y2="116" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.7"/>
+                        <circle cx="160" cy="100" r="6" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.7"/>
+                        <line x1="88" y1="93" x2="88" y2="107" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.5"/>
+                        <line x1="232" y1="93" x2="232" y2="107" stroke="#ffffff" stroke-opacity="0.85" stroke-width="1.5"/>
+                        <text x="160" y="45" text-anchor="middle" font-size="10" letter-spacing="3" fill="#ffffff">RÍO</text>
+                        <text x="160" y="164" text-anchor="middle" font-size="10" letter-spacing="3" fill="#ffffff">TRIBUNA</text>
+                        <text x="35" y="100" text-anchor="middle" font-size="7.5" letter-spacing="1.8" fill="#0A1F44" transform="rotate(-90 35 100)">MARCADOR</text>
+                        <text x="285" y="100" text-anchor="middle" font-size="7.5" letter-spacing="1.8" fill="#0A1F44" transform="rotate(90 285 100)">GOL · EN OBRAS</text>
+                        <circle id="grada-dot" cx="160" cy="100" r="6" fill="#E4002B" stroke="#ffffff" stroke-width="2.5" opacity="0"/>
+                    </svg>
+                    <ul class="stadium__legend">
+                        <li><i style="background: #E4002B;"></i><div><strong>Río</strong><span>Alto / Baixo · Central · Área · Córner</span></div></li>
+                        <li><i style="background: #0A1F44;"></i><div><strong>Tribuna</strong><span>Alta / Baixa · Central · Área · Córner</span></div></li>
+                        <li><i style="background: #8FCAE7;"></i><div><strong>Marcador</strong><span>Alto Central · Córner · Baixo</span></div></li>
+                        <li><i style="background: #9aa3b3;"></i><div><strong>Gol</strong><span>Zona en obras</span></div></li>
+                    </ul>
+                </div>
+
                 <div>
                     <input type="checkbox" id="privacy" name="privacy" required>
                     <label for="privacy">Acepto la política de privacidad</label>
@@ -652,6 +662,45 @@
         const form = document.getElementById('avisame-form');
         const status = document.getElementById('form-status');
         const submitBtn = form.querySelector('button[type="submit"]');
+
+        // Stadium dot — moves around the Balaídos scheme when the grada changes.
+        // Sectors are distributed clockwise from the top across Río / Tribuna /
+        // Marcador (the Gol arc is skipped because that side is en obras).
+        (function () {
+            const gradaSelect = document.getElementById('grada');
+            const dot = document.getElementById('grada-dot');
+            if (!gradaSelect || !dot) return;
+            const STADIUM = { cx: 160, cy: 100, rx: 132, ry: 70 };
+            const ARCS = [
+                { from: -45, to:  45 },   // Río (top)
+                { from: 135, to: 225 },   // Tribuna (bottom)
+                { from: 225, to: 315 },   // Marcador (left)
+            ];
+            function positionFor(index, total) {
+                if (total <= 0) return null;
+                const t = index / total;
+                const a = ARCS[Math.min(2, Math.floor(t * 3))];
+                const local = (t * 3) - Math.floor(t * 3);
+                const deg = a.from + local * (a.to - a.from);
+                const rad = deg * Math.PI / 180;
+                return {
+                    x: STADIUM.cx + STADIUM.rx * Math.sin(rad),
+                    y: STADIUM.cy - STADIUM.ry * Math.cos(rad),
+                };
+            }
+            function update() {
+                const opts = Array.from(gradaSelect.options).filter(o => o.value !== '');
+                const selected = gradaSelect.options[gradaSelect.selectedIndex];
+                const idx = selected ? opts.indexOf(selected) : -1;
+                if (idx < 0) { dot.setAttribute('opacity', '0'); return; }
+                const p = positionFor(idx, opts.length);
+                dot.setAttribute('cx', p.x.toFixed(2));
+                dot.setAttribute('cy', p.y.toFixed(2));
+                dot.setAttribute('opacity', '1');
+            }
+            gradaSelect.addEventListener('change', update);
+            update();
+        })();
 
         function showStatus(message, kind) {
             status.textContent = message;
