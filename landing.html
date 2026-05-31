@@ -443,18 +443,15 @@
             right: 1.25rem;
             bottom: 1.25rem;
             z-index: 1000;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.7rem 1.1rem 0.7rem 0.95rem;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            display: grid;
+            place-items: center;
+            width: 4.25rem;
+            height: 4.25rem;
+            padding: 0;
             color: #ffffff;
             background-color: var(--celta-red);
             border: none;
-            border-radius: 999px;
+            border-radius: 50%;
             box-shadow: 0 10px 28px rgba(10, 31, 68, 0.35);
             cursor: pointer;
             transition: transform 0.12s ease, box-shadow 0.15s ease, background-color 0.15s ease;
@@ -475,9 +472,8 @@
         }
 
         .chat-launcher svg {
-            width: 1.2rem;
-            height: 1.2rem;
-            flex-shrink: 0;
+            width: 1.95rem;
+            height: 1.95rem;
         }
 
         .chat-launcher[hidden] {
@@ -490,7 +486,7 @@
             bottom: 1.25rem;
             z-index: 1001;
             width: min(380px, calc(100vw - 2.5rem));
-            height: min(560px, calc(100vh - 2.5rem));
+            height: min(620px, calc(100vh - 2.5rem));
             display: flex;
             flex-direction: column;
             background-color: #ffffff;
@@ -615,8 +611,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.4rem;
-            padding: 0 1rem 0.75rem;
-            background-color: #f6f8fb;
+            align-self: flex-start;
+            max-width: 100%;
         }
 
         .chat-chip {
@@ -688,8 +684,6 @@
                 height: 100dvh;
                 border-radius: 0;
             }
-            .chat-launcher span { display: none; }
-            .chat-launcher { padding: 0.85rem; }
             .chat-form input { font-size: 16px; }
         }
     </style>
@@ -1056,7 +1050,6 @@
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/>
         </svg>
-        <span>¿Dudas?</span>
     </button>
 
     <section id="chat-panel" class="chat-panel" role="dialog" aria-modal="false"
@@ -1070,7 +1063,6 @@
             <button id="chat-close" class="chat-close" type="button" aria-label="Cerrar ayuda">&times;</button>
         </header>
         <div id="chat-log" class="chat-log" aria-live="polite"></div>
-        <div id="chat-suggestions" class="chat-suggestions"></div>
         <form id="chat-form" class="chat-form" autocomplete="off">
             <input id="chat-input" type="text" name="q" placeholder="Escribe tu pregunta…"
                    aria-label="Escribe tu pregunta">
@@ -1137,7 +1129,6 @@
             var panel = document.getElementById('chat-panel');
             var closeBtn = document.getElementById('chat-close');
             var log = document.getElementById('chat-log');
-            var suggestions = document.getElementById('chat-suggestions');
             var chatForm = document.getElementById('chat-form');
             var input = document.getElementById('chat-input');
             var started = false;
@@ -1157,16 +1148,21 @@
                 log.scrollTop = log.scrollHeight;
             }
 
+            // Chips live inside the scrollable log (as the opening turn), so they
+            // don't permanently shrink the conversation window.
             function renderChips() {
-                suggestions.innerHTML = '';
+                var wrap = document.createElement('div');
+                wrap.className = 'chat-suggestions';
                 KB.forEach(function (entry) {
                     var chip = document.createElement('button');
                     chip.type = 'button';
                     chip.className = 'chat-chip';
                     chip.textContent = entry.chip;
                     chip.addEventListener('click', function () { ask(entry.chip, entry); });
-                    suggestions.appendChild(chip);
+                    wrap.appendChild(chip);
                 });
+                log.appendChild(wrap);
+                log.scrollTop = log.scrollHeight;
             }
 
             // Best keyword-overlap match; returns the entry or null.
