@@ -436,6 +436,262 @@
                 font-size: 16px;
             }
         }
+
+        /* ============================ Chat widget ============================ */
+        .chat-launcher {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.1rem 0.7rem 0.95rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #ffffff;
+            background-color: var(--celta-red);
+            border: none;
+            border-radius: 999px;
+            box-shadow: 0 10px 28px rgba(10, 31, 68, 0.35);
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+
+        .chat-launcher:hover {
+            background-color: #c20025;
+            box-shadow: 0 14px 32px rgba(228, 0, 43, 0.4);
+        }
+
+        .chat-launcher:active {
+            transform: translateY(1px);
+        }
+
+        .chat-launcher:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.35);
+        }
+
+        .chat-launcher svg {
+            width: 1.2rem;
+            height: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .chat-launcher[hidden] {
+            display: none;
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            z-index: 1001;
+            width: min(380px, calc(100vw - 2.5rem));
+            height: min(560px, calc(100vh - 2.5rem));
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            border-top: 4px solid var(--celta-sky);
+            transform-origin: bottom right;
+            animation: chat-pop 0.18s ease-out;
+        }
+
+        .chat-panel[hidden] {
+            display: none;
+        }
+
+        @keyframes chat-pop {
+            from { opacity: 0; transform: scale(0.92) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.9rem 1rem;
+            background-color: var(--celta-navy);
+            color: #ffffff;
+        }
+
+        .chat-header__avatar {
+            flex-shrink: 0;
+            width: 2.1rem;
+            height: 2.1rem;
+            border-radius: 50%;
+            background-color: var(--celta-sky);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: var(--celta-navy);
+            font-size: 0.95rem;
+        }
+
+        .chat-header__text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header__title {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .chat-header__status {
+            margin: 0;
+            font-size: 0.7rem;
+            color: #b9c8e0;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .chat-header__status::before {
+            content: "";
+            width: 0.45rem;
+            height: 0.45rem;
+            border-radius: 50%;
+            background-color: #38c172;
+        }
+
+        .chat-close {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 6px;
+            opacity: 0.85;
+        }
+
+        .chat-close:hover { opacity: 1; background: rgba(255, 255, 255, 0.12); }
+
+        .chat-log {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: #f6f8fb;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .chat-msg {
+            max-width: 85%;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.88rem;
+            line-height: 1.45;
+            border-radius: 14px;
+            white-space: pre-line;
+        }
+
+        .chat-msg--bot {
+            align-self: flex-start;
+            background-color: #ffffff;
+            color: var(--celta-navy);
+            border: 1px solid #e3e8ef;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-msg--user {
+            align-self: flex-end;
+            background-color: var(--celta-sky-dark);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 0 1rem 0.75rem;
+            background-color: #f6f8fb;
+        }
+
+        .chat-chip {
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--celta-navy);
+            background-color: #ffffff;
+            border: 1px solid var(--celta-sky);
+            border-radius: 999px;
+            padding: 0.4rem 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.12s ease, color 0.12s ease;
+        }
+
+        .chat-chip:hover {
+            background-color: var(--celta-sky);
+            color: var(--celta-navy);
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-top: 1px solid #e3e8ef;
+            background-color: #ffffff;
+        }
+
+        .chat-form input {
+            flex: 1;
+            height: 2.4rem;
+            padding: 0 0.85rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--celta-navy);
+            border: 1px solid #d6dde6;
+            border-radius: 999px;
+        }
+
+        .chat-form input:focus {
+            outline: none;
+            border-color: var(--celta-sky);
+            box-shadow: 0 0 0 3px rgba(122, 177, 217, 0.25);
+        }
+
+        .chat-form button {
+            flex-shrink: 0;
+            width: 2.4rem;
+            height: 2.4rem;
+            display: grid;
+            place-items: center;
+            background-color: var(--celta-red);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .chat-form button:hover { background-color: #c20025; }
+
+        .chat-form button svg { width: 1.05rem; height: 1.05rem; }
+
+        @media (max-width: 600px) {
+            .chat-panel {
+                right: 0;
+                bottom: 0;
+                width: 100vw;
+                height: 100dvh;
+                border-radius: 0;
+            }
+            .chat-launcher span { display: none; }
+            .chat-launcher { padding: 0.85rem; }
+            .chat-form input { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -791,6 +1047,185 @@
             // Don't block the UI on Mailchimp's slow opaque response.
             setTimeout(function () { finish(true); }, 1000);
         });
+    </script>
+
+    <!-- ============================ Chat widget ============================ -->
+    <button id="chat-launcher" class="chat-launcher" type="button"
+            aria-label="Abrir ayuda" aria-expanded="false" aria-controls="chat-panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/>
+        </svg>
+        <span>¿Dudas?</span>
+    </button>
+
+    <section id="chat-panel" class="chat-panel" role="dialog" aria-modal="false"
+             aria-labelledby="chat-title" hidden>
+        <header class="chat-header">
+            <div class="chat-header__avatar" aria-hidden="true">RC</div>
+            <div class="chat-header__text">
+                <p id="chat-title" class="chat-header__title">Asistente Avísame</p>
+                <p class="chat-header__status">En línea · respuesta inmediata</p>
+            </div>
+            <button id="chat-close" class="chat-close" type="button" aria-label="Cerrar ayuda">&times;</button>
+        </header>
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+        <div id="chat-suggestions" class="chat-suggestions"></div>
+        <form id="chat-form" class="chat-form" autocomplete="off">
+            <input id="chat-input" type="text" name="q" placeholder="Escribe tu pregunta…"
+                   aria-label="Escribe tu pregunta">
+            <button type="submit" aria-label="Enviar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </form>
+    </section>
+
+    <script>
+        // ===================================================================
+        // Canned FAQ assistant — no backend, no API key. Matches the visitor's
+        // question against a small knowledge base by keyword overlap and
+        // replies with a pre-written answer. Falls back gracefully and always
+        // re-offers the suggested questions.
+        // ===================================================================
+        (function () {
+            var KB = [
+                {
+                    chip: '¿Cómo funciona?',
+                    keywords: ['como funciona', 'funciona', 'como va', 'que es', 'avisame', 'que hago', 'como me apunto', 'apuntar', 'registr'],
+                    answer: 'Rellena el formulario con tu nombre, correo, el número de entradas y la grada que prefieres. Te apuntamos a la lista de avisos de este partido en Balaídos y, en cuanto se pongan a la venta las entradas de tu grada, te enviamos un correo con el enlace para comprarlas. Es gratis y sin compromiso.'
+                },
+                {
+                    chip: '¿Cuánto tarda la confirmación?',
+                    keywords: ['confirmacion', 'confirmar', 'cuanto tarda', 'tarda', 'recibo el correo', 'correo de confirmacion', 'no me llega', 'no recibi'],
+                    answer: 'La confirmación de tu registro es inmediata: recibirás un correo de confirmación en cuestión de minutos. Si no lo ves, revisa la carpeta de spam o de promociones — a veces acaba ahí.'
+                },
+                {
+                    chip: '¿Cuándo me avisáis de las entradas?',
+                    keywords: ['cuando recibire', 'aviso', 'avisais', 'entradas disponibles', 'disponible', 'notificacion', 'cuando me avisan', 'cuando salen', 'a la venta', 'venta'],
+                    answer: 'Te avisamos en cuanto se abran las entradas para el partido. No hay una fecha fija: depende de cuándo el club las ponga a la venta. En ese momento te llega un correo para que seas de los primeros en comprar tu grada.'
+                },
+                {
+                    chip: '¿Tiene algún coste?',
+                    keywords: ['coste', 'cuesta', 'gratis', 'precio', 'pagar', 'gratuito', 'tengo que pagar'],
+                    answer: 'No. Apuntarte al Avísame es totalmente gratuito y no te compromete a comprar nada. Solo pagarás si finalmente decides comprar tus entradas cuando salgan a la venta.'
+                },
+                {
+                    chip: '¿Puedo elegir varias gradas?',
+                    keywords: ['varias gradas', 'mas de una grada', 'varias zonas', 'varios sectores', 'otra grada', 'cambiar grada', 'dos gradas'],
+                    answer: 'En el formulario eliges una grada preferida. Si quieres recibir avisos de varias, puedes registrarte de nuevo seleccionando otra grada — te avisaremos para cada una.'
+                },
+                {
+                    chip: '¿Cómo me doy de baja?',
+                    keywords: ['baja', 'darme de baja', 'cancelar', 'eliminar', 'borrar', 'no quiero recibir', 'unsubscribe', 'dejar de recibir'],
+                    answer: 'Puedes darte de baja cuando quieras: cada correo que te enviamos incluye un enlace para cancelar la suscripción al instante.'
+                },
+                {
+                    chip: '¿Mis datos están seguros?',
+                    keywords: ['datos', 'privacidad', 'seguro', 'seguros', 'que haceis con mis datos', 'proteccion', 'rgpd'],
+                    answer: 'Sí. Usamos tus datos únicamente para avisarte cuando haya entradas disponibles, nunca para otra cosa, y puedes darte de baja en cualquier momento.'
+                }
+            ];
+
+            var FALLBACK = 'Lo siento, solo puedo ayudarte con dudas sobre el aviso de entradas para el partido. Prueba con una de estas preguntas 👇';
+            var GREETING = '¡Hola! 👋 Soy el asistente del Avísame. ¿En qué puedo ayudarte? Elige una pregunta o escríbeme la tuya.';
+
+            var launcher = document.getElementById('chat-launcher');
+            var panel = document.getElementById('chat-panel');
+            var closeBtn = document.getElementById('chat-close');
+            var log = document.getElementById('chat-log');
+            var suggestions = document.getElementById('chat-suggestions');
+            var chatForm = document.getElementById('chat-form');
+            var input = document.getElementById('chat-input');
+            var started = false;
+
+            function normalize(s) {
+                return String(s).toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // strip accents
+                    .replace(/[^a-z0-9\s]/g, ' ')
+                    .replace(/\s+/g, ' ').trim();
+            }
+
+            function addMessage(text, who) {
+                var el = document.createElement('div');
+                el.className = 'chat-msg chat-msg--' + who;
+                el.textContent = text;
+                log.appendChild(el);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function renderChips() {
+                suggestions.innerHTML = '';
+                KB.forEach(function (entry) {
+                    var chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'chat-chip';
+                    chip.textContent = entry.chip;
+                    chip.addEventListener('click', function () { ask(entry.chip, entry); });
+                    suggestions.appendChild(chip);
+                });
+            }
+
+            // Best keyword-overlap match; returns the entry or null.
+            function findAnswer(query) {
+                var q = normalize(query);
+                if (!q) return null;
+                var best = null, bestScore = 0;
+                KB.forEach(function (entry) {
+                    var score = 0;
+                    entry.keywords.forEach(function (kw) {
+                        if (q.indexOf(normalize(kw)) !== -1) score += normalize(kw).split(' ').length;
+                    });
+                    if (score > bestScore) { bestScore = score; best = entry; }
+                });
+                return bestScore > 0 ? best : null;
+            }
+
+            function ask(displayText, knownEntry) {
+                addMessage(displayText, 'user');
+                var entry = knownEntry || findAnswer(displayText);
+                // Reply with a tiny delay so it reads as a response, not an echo.
+                window.setTimeout(function () {
+                    addMessage(entry ? entry.answer : FALLBACK, 'bot');
+                }, 250);
+            }
+
+            function openChat() {
+                panel.hidden = false;
+                launcher.hidden = true;
+                launcher.setAttribute('aria-expanded', 'true');
+                if (!started) {
+                    started = true;
+                    addMessage(GREETING, 'bot');
+                    renderChips();
+                }
+                input.focus();
+            }
+
+            function closeChat() {
+                panel.hidden = true;
+                launcher.hidden = false;
+                launcher.setAttribute('aria-expanded', 'false');
+                launcher.focus();
+            }
+
+            launcher.addEventListener('click', openChat);
+            closeBtn.addEventListener('click', closeChat);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !panel.hidden) closeChat();
+            });
+
+            chatForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var q = input.value.trim();
+                if (!q) return;
+                input.value = '';
+                ask(q, null);
+            });
+        })();
     </script>
 </body>
 </html>
